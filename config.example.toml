@@ -1,0 +1,61 @@
+[geoip]
+database = "/path/to/GeoLite2-City.mmdb"
+
+[loki]
+url = "http://localhost:3100/loki/api/v1/push"
+tenant_id = ""
+batch_size = 100
+batch_timeout_ms = 1000
+timeout_secs = 10
+
+[loki.labels]
+job = "nginx"
+host = "example-host"
+
+[[watch]]
+glob = "/var/log/nginx/*.log"
+ignore = [
+  "/var/log/nginx/error.log",
+  "/var/log/nginx/*.old.log",
+]
+ignore_ips = [
+  "127.0.0.1",
+  "192.168.111.0/24",
+  "192.168.111.10-192.168.111.20",
+  "2001:db8::/32",
+  "2001:db8:abcd::10-2001:db8:abcd::20",
+  "2001:db8:ffff::",
+]
+ignore_paths = [
+  "/stub_status",
+  "/healthz",
+  "/api/*",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/assets/*",
+  "*.css",
+  "*.js",
+  "*.jpg",
+  "*.png",
+  "*.gif",
+  "*.webp",
+  "*.woff2",
+  "*.pdf",
+]
+ignore_status = [
+  301,
+  302,
+]
+format = "combined"
+from_beginning = false
+
+[watch.labels]
+source = "nginx-access"
+
+[[watch]]
+glob = "/var/log/nginx/*.json.log"
+format = "json"
+from_beginning = false
+
+[watch.labels]
+source = "nginx-json-access"
